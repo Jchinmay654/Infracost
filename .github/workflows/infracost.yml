@@ -84,5 +84,5 @@ jobs:
             infracost comment github --path=/tmp/infracost.json \
                                      --repo=Jchinmay654/Infracost \
                                      --github-token=${{ secrets.GITHUB_TOKEN }} \
-                                     --pull-request=1 \
+                                     --pull-request=2 \
                                      --behavior=update
