@@ -43,6 +43,9 @@ jobs:
         # If you can't use this action, see Docker images in https://infracost.io/cicd
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
+      # Add a new step for infracost breakdown
+      - name: Run Infracost breakdown
+        run: infracost breakdown --path=${{ github.workspace }}
 
       # Checkout the base branch of the pull request (e.g. main/master).
       - name: Checkout base branch
