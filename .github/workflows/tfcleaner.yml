@@ -1,9 +1,8 @@
-name: Terraform Variable Cleanup
+name: Terraform Variable Cleanups
 
 on:
   workflow_call:
   pull_request:
-
 
 jobs:
   tf-vars-cleanup:
@@ -21,6 +20,7 @@ jobs:
           VERSION="${{ github.event.inputs.version }}"
           wget https://github.com/sylwit/terraform-cleaner/releases/download/v${{ github.event.inputs.version || '0.0.4' }}/terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz
           tar -xvf terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz
+
       - name: Run Terraform Cleaner
         id: terraform-cleaner
         run: |
@@ -28,25 +28,21 @@ jobs:
           terraform-cleaner
           cleaner_output=$(terraform-cleaner 2>&1)
           echo "::set-output name=cleaner-output::$cleaner_output"
+
       - name: Get PR number
         id: PR
         run: echo "Pull Request number is ${{ github.event.pull_request.number }}"
-        
+
       - name: Comment on PR
+        if: ${{ env.cleaner_output != '' }}
         uses: actions/github-script@v5.0.0
-        
-        env: 
+        env:
           github-token: ${{ secrets.GH_PAT }}
         with:
-         script: |
-           github.rest.issues.createComment({
+          script: |
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: "${{ env.cleaner_output }}"
             })
-
-
-
-
- 
