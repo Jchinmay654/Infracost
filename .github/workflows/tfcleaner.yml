@@ -47,6 +47,6 @@ jobs:
               issue_number: ${{ steps.PR.outputs.PR }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "${{ env.cleaner_output }},"
-                 });
+              body: "${{ env.cleaner_output }}",
+                 })
          debug: true
