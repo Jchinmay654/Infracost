@@ -39,13 +39,13 @@ jobs:
 
       - name: Comment on Pr
         uses: actions/github-script@v5.0.0
-        env: 
-         Token: ${{ secrets.TOKEN }}
+        env:
+         TOKEN: ${{ secrets.TOKEN }}
         with:
          script: |
             github.issues.createComment({
               issue_number: ${{ steps.PR.outputs.PR }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '${{ env.CLEANER_OUTPUT }}'
-            })
+              body: '${{ env.CLEANER_OUTPUT }}' ,
+            });
