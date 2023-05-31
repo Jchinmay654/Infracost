@@ -44,11 +44,9 @@ jobs:
         with:
          script: |
             github.issues.createComment({
-              issue_number: ${{ steps.PR.outputs.PR }},
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: context.repo.ref
-              workflow_id: 'workflows/tfcleaner.yml'
               body: "${{ env.cleaner_output }}",
                  })
          debug: true
