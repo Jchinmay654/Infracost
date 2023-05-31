@@ -41,7 +41,7 @@ jobs:
          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         with:
          script: |
-          const github = require('@actions/github');
+          const myGithub = require('@actions/github');
           const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
           const pullRequest = await octokit.rest.pulls.create({
            owner: 'Jchinmay654',
