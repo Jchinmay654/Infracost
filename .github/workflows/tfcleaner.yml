@@ -3,6 +3,8 @@ name: Terraform Variable Cleanups
 on:
   workflow_call:
   pull_request:
+  push: 
+    branches: ['*']
 
 
 jobs:
