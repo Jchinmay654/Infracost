@@ -3,8 +3,7 @@ name: Terraform Variable Cleanups
 on:
   workflow_call:
   pull_request:
-  push: 
-    branches: ['*']
+
 
 
 jobs:
@@ -37,16 +36,11 @@ jobs:
         run: echo "Pull Request number is ${{ github.event.pull_request.number }}"
         
       - name: Comment on PR
-        uses: actions/github-script@v5.0.0
-        
-        env: 
-          github-token: ${{ secrets.GH_PAT }}
+        uses: marvinpinto/action-automatic-pull-request-comment@latest
+        env:
+         GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         with:
-         script: |
-           github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: "${{ env.cleaner_output }}"
-            })
+         message: ${{ env.cleaner_output }}
+
+
 
