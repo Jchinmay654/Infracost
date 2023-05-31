@@ -1,10 +1,10 @@
 name: Terraform Variable Cleanups
 
 on:
-  workflow_call:
   pull_request:
-
-
+    types:
+      - opened
+      - synchronize
 
 jobs:
   tf-vars-cleanup:
@@ -15,13 +15,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Download Terraform Cleaner
         run: |
           VERSION="${{ github.event.inputs.version }}"
-          wget https://github.com/sylwit/terraform-cleaner/releases/download/v${{ github.event.inputs.version || '0.0.4' }}/terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz
-          tar -xvf terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz
+          wget "https://github.com/sylwit/terraform-cleaner/releases/download/v${{ github.event.inputs.version || '0.0.4' }}/terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz"
+          tar -xvf "terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz"
 
       - name: Run Terraform Cleaner
         id: terraform-cleaner
@@ -31,23 +31,14 @@ jobs:
           cleaner_output=$(terraform-cleaner 2>&1)
           echo "::set-output name=cleaner-output::$cleaner_output"
 
-      - name: Get PR number
-        id: PR
-        run: echo "Pull Request number is ${{ github.event.pull_request.number }}"
-        
+      - name: Display Cleaner Output
+        run: echo "Cleaner Output:${{ steps.terraform-cleaner.outputs.cleaner-output }}"
 
-      - name: Comment on PR
+      - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         with:
-         token: ${{ secrets.GH_PAT }}
-         commit-message: Add comment to pull request
-         title: Pull Request Comment
-         body: ${{ env.cleaner_output }}
-         base: main
-         head: tfcleaner
-         branch: pull-request-comment
-
-
-
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Terraform Variable Cleanups"
+          title: "Terraform Variable Cleanups"
+          body: ${{ env.cleaner_output }}
+          branch: pull-request-comment
