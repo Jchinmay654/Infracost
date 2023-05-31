@@ -35,17 +35,22 @@ jobs:
         id: PR
         run: echo "Pull Request number is ${{ github.event.pull_request.number }}"
         
-      - name: Comment on PR
-        uses: peter-evans/create-pull-request@v3
+      - name: Create Pull Request
+        uses: actions/github-script@v5.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+         GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         with:
-         token: ${{ secrets.GH_PAT }}
-         commit-message: Add comment to pull request
-         title: Pull Request Comment
-         body: ${{ env.cleaner_output }}
-         base: main
-         branch: pull-request-comment
+         script: |
+          const github = require('@actions/github');
+          const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+          const pullRequest = await octokit.rest.pulls.create({
+           owner: 'Jchinmay654',
+           repo: 'Infracost',
+           title: 'My Pull Request',
+           head: context.ref,
+           base: 'main'
+            });
+          console.log(`Pull Request created: ${pullRequest.data.html_url}`);
 
 
 
