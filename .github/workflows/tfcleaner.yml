@@ -40,17 +40,15 @@ jobs:
         env:
          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         with:
-         script: |
-          const myGithub = require('@actions/github');
-          const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-          const pullRequest = await octokit.rest.pulls.create({
-           owner: 'Jchinmay654',
-           repo: 'Infracost',
-           title: 'My Pull Request',
-           head: context.ref,
-           base: 'main'
-            });
-          console.log(`Pull Request created: ${pullRequest.data.html_url}`);
+          script: |
+           const pullRequest = await github.rest.pulls.create({
+             owner: 'Jchinmay654',
+             repo: 'Infracost',
+             title: 'My Pull Request',
+             head: context.ref,
+             base: 'main'
+                });
+             console.log(`Pull Request created: ${pullRequest.data.html_url}`);
 
 
 
