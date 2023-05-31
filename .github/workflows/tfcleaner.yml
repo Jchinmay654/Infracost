@@ -1,0 +1,52 @@
+name: Terraform Variable Cleanups
+
+on:
+  workflow_call:
+  pull_request:
+
+jobs:
+  tf-vars-cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Terraform Cleaner
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          wget https://github.com/sylwit/terraform-cleaner/releases/download/v${{ github.event.inputs.version || '0.0.4' }}/terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz
+          tar -xvf terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz
+      - name: Run Terraform Cleaner
+        id: terraform-cleaner
+        run: |
+          mv terraform-cleaner /usr/local/bin
+          OUTPUT=$(terraform-cleaner)
+          echo "::set-output name=output::$OUTPUT"
+          echo 'CLEANER_OUTPUT<<EOF' >> $GITHUB_ENV
+          echo "$OUTPUT" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - name: Check Cleaner Output
+        run: |
+         echo "Cleaner Output:"
+         echo $CLEANER_OUTPUT
+      - name: Get PR number
+        id: PR
+        run: echo "Pull Request number is ${{ github.event.pull_request.number }}"
+
+      - name: Comment on Pr
+        uses: actions/github-script@v5.0.0
+        env:
+         TOKEN: ${{ secrets.TOKEN }}
+        with:
+         script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "${{ env.cleaner_output }}",
+                 })
+         debug: true
