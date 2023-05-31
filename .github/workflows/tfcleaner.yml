@@ -20,29 +20,32 @@ jobs:
           VERSION="${{ github.event.inputs.version }}"
           wget https://github.com/sylwit/terraform-cleaner/releases/download/v${{ github.event.inputs.version || '0.0.4' }}/terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz
           tar -xvf terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz
-
       - name: Run Terraform Cleaner
         id: terraform-cleaner
         run: |
           mv terraform-cleaner /usr/local/bin
-          terraform-cleaner
-          cleaner_output=$(terraform-cleaner 2>&1)
-          echo "::set-output name=cleaner-output::$cleaner_output"
-
+          OUTPUT=$(terraform-cleaner)
+          echo "::set-output name=output::$OUTPUT"
+          echo 'CLEANER_OUTPUT<<EOF' >> $GITHUB_ENV
+          echo "$OUTPUT" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - name: Check Cleaner Output
+        run: |
+         echo "Cleaner Output:"
+         echo $CLEANER_OUTPUT
       - name: Get PR number
         id: PR
         run: echo "Pull Request number is ${{ github.event.pull_request.number }}"
 
-      - name: Comment on PR
-        if: ${{ env.cleaner_output != '' }}
+      - name: Comment on Pr
         uses: actions/github-script@v5.0.0
         env:
           github-token: ${{ secrets.GH_PAT }}
         with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+         script: |
+            github.issues.createComment({
+              issue_number: ${{ steps.PR.outputs.PR }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "${{ env.cleaner_output }}"
+              body: "$CLEANER_OUTPUT"
             })
