@@ -36,11 +36,16 @@ jobs:
         run: echo "Pull Request number is ${{ github.event.pull_request.number }}"
         
       - name: Comment on PR
-        uses: marvinpinto/action-automatic-pull-request-comment@latest
+        uses: peter-evans/create-pull-request@v3
         env:
-         GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         with:
-         message: ${{ env.cleaner_output }}
+         token: ${{ secrets.GH_PAT }}
+         commit-message: Add comment to pull request
+         title: Pull Request Comment
+         body: ${{ env.cleaner_output }}
+         base: main
+         branch: pull-request-comment
 
 
 
