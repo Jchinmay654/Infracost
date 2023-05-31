@@ -1,4 +1,4 @@
-name: Terraform Variable Cleanup
+name: Terraform Variable Cleanups
 
 on:
   workflow_call:
