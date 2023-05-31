@@ -47,13 +47,6 @@ jobs:
             })
 
 
-      - name: Display Cleaner Output
-        run: echo "Cleaner Output:${{ steps.terraform-cleaner.outputs.cleaner-output }}"
 
-      - name: Debugging
-        run: |
-          echo "Cleaner Output Length: ${#cleaner_output}"
-          echo "Cleaner Output: $cleaner_output"
-          ls -l /usr/local/bin
 
  
