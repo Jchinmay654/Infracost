@@ -1,10 +1,9 @@
-name: Terraform Variable Cleanups
+name: Terraform Variable Cleanup
 
 on:
+  workflow_call:
   pull_request:
-    types:
-      - opened
-      - synchronize
+
 
 jobs:
   tf-vars-cleanup:
@@ -29,6 +28,24 @@ jobs:
           terraform-cleaner
           cleaner_output=$(terraform-cleaner 2>&1)
           echo "::set-output name=cleaner-output::$cleaner_output"
+      - name: Get PR number
+        id: PR
+        run: echo "Pull Request number is ${{ github.event.pull_request.number }}"
+        
+      - name: Comment on PR
+        uses: actions/github-script@v5.0.0
+        
+        env: 
+          github-token: ${{ secrets.GH_PAT }}
+        with:
+         script: |
+           github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "${{ env.cleaner_output }}"
+            })
+
 
       - name: Display Cleaner Output
         run: echo "Cleaner Output:${{ steps.terraform-cleaner.outputs.cleaner-output }}"
@@ -39,11 +56,4 @@ jobs:
           echo "Cleaner Output: $cleaner_output"
           ls -l /usr/local/bin
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Terraform Variable Cleanups"
-          title: "Terraform Variable Cleanups"
-          body: ${{ env.cleaner_output }}
-          branch: pull-request-comment
+ 
