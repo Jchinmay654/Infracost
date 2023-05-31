@@ -15,14 +15,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Download Terraform Cleaner
         run: |
           VERSION="${{ github.event.inputs.version }}"
-          wget "https://github.com/sylwit/terraform-cleaner/releases/download/v${{ github.event.inputs.version || '0.0.4' }}/terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz"
-          tar -xvf "terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz"
-
+          wget https://github.com/sylwit/terraform-cleaner/releases/download/v${{ github.event.inputs.version || '0.0.4' }}/terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz
+          tar -xvf terraform-cleaner_${{ github.event.inputs.version || '0.0.4' }}_linux_amd64.tar.gz
       - name: Run Terraform Cleaner
         id: terraform-cleaner
         run: |
